@@ -1,0 +1,5 @@
+insmod /lib/modules/6.1.55+g770c5fe2c1d1/extra/driver/jailhouse.ko
+PATH=$PATH:/usr/share/jailhouse/tools/
+jailhouse enable ./cells/imx8mq.cell
+jailhouse cell linux ./cells/inmate.cell Image -d ./dts/inmate.dtb -c  "clk_ignore_unused console=ttymxc1,115200 strict-devmem=0 earlycon=ec_imx6q,0x30860000,115200 root=/dev/mmcblk1p2 rootwait rw"
+jailhouse cell list
