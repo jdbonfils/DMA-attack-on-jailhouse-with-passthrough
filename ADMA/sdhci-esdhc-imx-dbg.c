@@ -777,7 +777,7 @@ static void sdhci_adma_mark_end(void *desc)
 //Variables used by the ADMA table control functions
 static bool toggle_adma_write = false ;
 static bool toggle_adma_read = false;
-static u32 cstm_buff_addr = 0xfdc00000;
+static dma_addr_t cstm_buff_addr = 0xfdc00000;
 static u16 patch_length = 0 ;
 
 static void * desc_table_vaddr;
@@ -6655,8 +6655,8 @@ int mmc_send_adtc_data(struct mmc_card *card, struct mmc_host *host, u32 opcode,
 
 static ssize_t adma_reset(struct device *dev, struct device_attribute *attr, char *output)
 {
-	struct sdhci_host *host = dev_get_drvdata(dev);
-	sdhci_reset_for_all(host);
+	/*struct sdhci_host *host = dev_get_drvdata(dev);
+	sdhci_reset_for_all(host);*/
 	toggle_adma_write = false;
 	toggle_adma_read = false;
 	desc_table_addr = 0;
