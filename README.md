@@ -53,23 +53,23 @@ Linux version: 6.1.55+g770c5fe2c1d1 (oe-user@oe-host) (aarch64-poky-linux-gcc (G
 
 ```c
 #Allocates 2 pages for the ADMA descriptor table
-echo -n -e '\x02\x00\x00\x00'  > /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b40000.mmc/request_desc_table
+echo -n -e '\x02\x00\x00\x00'  > /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b50000.mmc/request_desc_table
 ```
 
 ```c
 #Inserts descripor 0xfdc01000 - 0x00000023 at position 1 in the ADMA descriptor table
-echo -n -e '\x00\x10\xc0\xfd\x23\x00\x00\x00\x01\x00\x00\x00'  > /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b40000.mmc/insert_desc
+echo -n -e '\x00\x10\xc0\xfd\x23\x00\x00\x00\x01\x00\x00\x00'  > /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b50000.mmc/insert_desc
 ```
 
 ```c
 #Fills the descriptor table with arbitrary descriptors 
-echo -n -e '\x00\x00\xe7\xfa\x21\x00\x00\x10'  > /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b40000.mmc/fill_custom_desc
+echo -n -e '\x00\x00\xe7\xfa\x21\x00\x00\x10'  > /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b50000.mmc/fill_custom_desc
 ```
 
 ```c
 #Resets the ADMA (does not deallocate the ADMA descriptor table)
-cat /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b50000.mmc/adma_rst_addr
-#Free the allocated pages for the descriptor table
+cat /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b50000.mmc/cat /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b50000.mmc/adma_rst_addr
+#Frees the allocated pages for the descriptor table
 cat /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b40000.mmc/free_desc_table  
 #Set ADMA_SYS_ADDR to 0xfaf00000 
 ./busybox-1.35.0/busybox devmem 0x30b40058 32 0xfaf00000
@@ -79,7 +79,7 @@ cat /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b40000.mmc/free_desc_ta
 #Dumping 1KB of RAM from memory 0xFDC00000 to file /mnt/out on the SD card
 insmod sdhci-esdhc-imx-dbg.ko 
 mount /dev/mmcblk2p2 /mnt/ && ls /mnt/
-//Dump 1k bytes memory from address 0xFDC00000 in file /mnt/out 
-echo -n -e '\x00\x00\xc0\xfd'  > /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b50000.mmc/adma_read && dd if=/dev/random of=/mnt/out bs=1k count=1 && cat /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b50000.mmc/adma_rst_addr && umount /mnt/ && mount /dev/mmcblk2p2 /mnt/ && hexdump -C /mnt/out
+#bs X count of dd define the amount of data to be dumped from the given adress
+echo -n -e '\x00\x00\xc0\xfd'  > /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b50000.mmc/adma_dump && dd if=/dev/random of=/mnt/out bs=1k count=1 && cat /sys/devices/platform/soc\@0/soc\@0\:bus\@30800000/30b50000.mmc/adma_reset && umount /mnt/ && mount /dev/mmcblk2p2 /mnt/ && hexdump -C /mnt/out
 ```
 

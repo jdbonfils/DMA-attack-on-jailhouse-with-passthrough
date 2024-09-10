@@ -6659,7 +6659,6 @@ static ssize_t adma_reset(struct device *dev, struct device_attribute *attr, cha
 	sdhci_reset_for_all(host);*/
 	toggle_adma_write = false;
 	toggle_adma_read = false;
-	desc_table_addr = 0;
 	patch_length = 0;	
 	return 0;
 }
@@ -6696,10 +6695,11 @@ static ssize_t request_desc_table(struct device *dev, struct device_attribute *a
 	dev_info(dev, "INFO: %d PAGES requested for ADMA descriptor table \n",nbPages);
 	desc_table_size = PAGE_SIZE*nbPages;
 	desc_table_vaddr = dma_alloc_coherent(dev,desc_table_size, &desc_table_addr, GFP_KERNEL);
-	dev_info(dev, "INFO: Descriptor table allocated at address: %08lx \n",desc_table_addr);
-
+	if(!desc_table_vaddr)
+		dev_info(dev, "ERROR: Unable to allocate %d pages for the ADMA descriptor table \n",nbPages);
+	else
+		dev_info(dev, "INFO: Descriptor table allocated at address: %08lx \n",desc_table_addr);
 	return count;
-
 }
 
 //Inserts an arbitrary descriptor in the ADMA table at a specific position
@@ -6726,11 +6726,13 @@ static ssize_t insert_desc(struct device *dev, struct device_attribute *attr, co
 //Free the ADMA table previously allocated
 static ssize_t free_desc_table(struct device *dev, struct device_attribute *attr, char *output)
 {
-	dev_info(dev, "INFO: Freeing %d bytes at address %08llx \n",desc_table_size,desc_table_vaddr);
 	if(desc_table_vaddr)
+	{
+		dev_info(dev, "INFO: Freeing %d bytes at address %08llx \n",desc_table_size,desc_table_vaddr);
 		dma_free_coherent(dev, desc_table_size, desc_table_vaddr, desc_table_addr);
+	}
 	else
-		dev_info(dev, "INFO: No descriptor table allocated\n");
+		dev_info(dev, "INFO: No custom descriptor table allocated\n");
 
 	desc_table_addr = 0;
 	desc_table_vaddr = NULL;
